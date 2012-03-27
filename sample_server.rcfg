@@ -1,0 +1,7 @@
+servername="your server"
+realm=your_logon_server
+update=your_update_server # only if exist
+serverver=1.21 # here enter the version of your server/realm
+owner=your_name
+ownermail=your_e_mail_address 
+cfg_ver=0.9

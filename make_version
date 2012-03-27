@@ -1,0 +1,119 @@
+#!/bin/sh
+# syntax: $0 [ --debug ] version:rev target 
+. $HOME/bin/libsh
+
+_flags=debug:static:dynamic
+__flags='#\\\\d:#\\\\s:#\\\\dy' 
+#      debug  static  dynamic
+write_flags() {
+    old_ifs=$IFS
+    IFS=:
+    for var in $_flags ; do 
+    count=$(( $count  + 1 )) 
+      for var1 in $flags ; do 
+	IFS=$old_ifs
+	if [ $var1 = $var ] ; then
+	  IFS=$old_ifs
+	  sed -i "s/"`read_farry $__flags $count`"//" $1
+	  IFS=:
+	  break
+	fi
+      done
+    done
+    IFS=$old_ifs
+}
+
+test_defined() {
+  echo  `read_farry $defined_vars 0` | grep -q $1
+}
+
+test_defined_vars() {
+  cp $target/$app $target/$app.tmp
+  for var in "`grep  -n '#\\ifdef' $app.tmp`" ; do
+	old_ifs=$IFS
+	IFS=:
+	for defin in $defined_vars ; do
+	      if echo $var | grep $defin ; then 
+		IFS=$old_ifs
+		grep 
+	done
+		
+#     	defined_start_line=`echo $var | sed -e "s/*[a-z]//"`
+# 	defined_end=`cat $app | sed -e "1,$defined_start_line d" | grep -ne '#endif\\ {1}'`
+# 	#var=`
+#     if test_defined `echo $var | sed -e 's/#\\\\//'` ; then
+#       sed -ie "$defined_start_line" $target/$basename_app && \
+#       sed -ie "`$(( $defined_end - 1))`" $target/$basename_app
+#     else
+#       sed -ie "$defined_start_line,$defined_end d"  $target/$basename_app
+#     fi
+
+  done
+#   for var in "`grep -n \#\\\\endif $app`" ; do
+#     end_if[${#start_if[*]}]=$var
+#   done
+}
+clear_flags() {
+  old_ifs=$IFS
+  IFS=:
+  for var in $_flags  ; do 
+    IFS=$old_ifs
+    count_clear_flags=$(( $count_clear_flags + 1))
+    echo $flags | grep $var || sed -i "/`read_farry $__flags $count_clear_flags`/d" $1
+    IFS=:
+  done
+  IFS=$old_ifs
+}
+make_version() {
+  mkdir -p $target
+  cp $app $target/$basename_app
+}
+
+make_static() {
+  old_ifs=$IFS
+  IFS=:
+  for var in ${libdir}$EMBED_LIBS ; do
+    cat $var >> $target/$basename_app.tmp
+  done &&  \
+  IFS=$old_ifs &&\
+  cat $app >> $target/$basename_app.tmp
+  sed -ie '/^\..*/d' $target/$basename_app.tmp
+  mv $target/$basename_app.tmp $target/$basename_app
+}
+
+configure_input() {
+  app=$2 
+  target=$1
+}
+if [ ! $1 = "" ] ; then
+  for var in $@ ; do
+    case $var in 
+      --debug) 
+	  echo $flags |grep -v debug && flags=debug:$flags
+	  shift
+	  ;;
+      --static) 
+	 echo $flags | grep -v static && flags=static:$flags
+	 shift
+	 ;;
+      --dynamic) 
+	echo $flags | grep -v dynamic && flags=dynamic:$flags 
+	shift
+	;;
+      --make) 
+	test -e $2 || d_msg ! error "$2 not found" || break
+	. $2     
+	break
+	;;
+      *) test $# = 2  && break ;;
+    esac
+  done
+  test $1 = --make || configure_input "$1" "$2" 
+  basename_app=`basename $app`
+  make_version
+  test ! -z $3 && EMBED_LIBS=$3 && make_static 
+  write_flags $target/$basename_app && clear_flags $target/$basename_app
+  #test_defined_vars
+else
+  d_msg ! error 'No input given!'
+fi

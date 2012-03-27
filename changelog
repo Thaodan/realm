@@ -1,0 +1,64 @@
+# legend
+# fix = fixed
+# ch  = change
+# the "$" this is the variable name of the menu point
+0.9   <Date Initial Release>
+0.9.1 ch  variable $LANG:GAMEDIR  to GAMEDIRLS
+      ch  variable $LANG:GAMEDIRL to GAMEDIRLL
+      ch  variable WOWDIR to GAMEDIR
+      fix -s|--status give the right informations
+      fix config:prefix don't quited after finishing the process
+     
+0.9.2 new added back option to realm:$conf:$GAMEDIRLS 
+			       realm:$conf:prefix
+			       realm:$conf:$MSGCL
+      added enUS lang
+      
+
+1.1 core rewrite of realm
+    realm now use to setup files 
+    1. the server file 
+    2. the WoW version file
+    
+   if you select an server to start realm compares the version of the server with the version of the installed
+   WoW versions and select the right version.
+   if realm found the right version realm will start wow
+
+  note:
+  an example files is inclued as sample_server.cfg
+1.1.05 
+  varios language text fixes
+  new design of server menu
+  redesign of server menu settings selection see line 147-161 for informations
+  
+1.1.07 
+  when realm starts wow realm now makes a log file
+
+1.1.10
+  better design of settings menu
+  fixed the bug that after switching back from settings the short commands don't work
+  added the function that before WoW starts , the cache of the started application will deleted
+  
+1.2.0 
+  redesign of input menu:
+    servers can now selected by numbers instead of their names ( the is still working to)
+  new design of manage gameversions in settings menu
+  some changes of lang variables
+
+1.2.1 
+  regedisgn of wow versions management
+  some improvments with the menu design
+  new log system: realm logs now the wine output of wow (see man wine under WINE vars for info)
+
+1.2.2 
+  fix version manage menu
+  new feature: after wow is terminated realm ask for enter r to return to menu or to enter any key to exit if realm
+  is started with --window ( standart option in desktop starter)
+
+1.2.3
+  change: now log will no longer displayed after wow quits
+	  to display latest log file you have to press l
+  change: now have to press q to quit realm after wow is terminated instead of any key
+  now realm terminates wow when q r or l is pressed after wow is launched
+  change: realm now prints servernames instead of the name of their cfg-file
+ 

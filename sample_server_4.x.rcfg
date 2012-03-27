@@ -1,0 +1,11 @@
+servername="your server"
+realm=your_logon_server
+update=your_update_server # only if exist
+serverver=4.x # here enter the version of your server/realm 
+owner=your_name
+ownermail=your_e_mail_address 
+cfg_ver=1.7
+server_launcher=http://launcher.realm.org/server_launcher.exe #  url to server_launcher
+server_wowclient=http://launcher.realm.org/test_realmWowclient.exe # url to Wowclient
+
+
