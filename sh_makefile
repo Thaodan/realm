@@ -1,4 +1,0 @@
-flags=
-#definded_vars=cataclysm
-app=realm.sh
-target=`bash realm.sh --version`
