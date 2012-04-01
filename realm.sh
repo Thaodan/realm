@@ -20,14 +20,14 @@
 #
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
-REALM_REVISION=2200  # + 30 per change
+REALM_REVISION=2290  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 servercfgdir=$CONFDIR/servers # set server rcfg content dir ( realm content file gen2)
 appdir=$CONFDIR/applications # set  application rcfg content dir
 rcfg_cache=${XDG_CACHE_HOME:=$HOME/.cache}/realm/content # set rcfg_cache  cache 
 APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara
-
+server_related_cache=${XDG_CACHE_HOME:-$HOME/.cache}/realm/server_related
 
 #\\mac_os_xexe="World of Warcraft.app"
 #\\mac_os_xreadonly exe
@@ -202,10 +202,13 @@ sync_rcfg_content() { # sync_rcfg_content $sever_launcher (testserver_launcher.e
   unset var
 }
 #\\endif
-get_game_lang() { # get gamelang from Config.wtf in $GAMEDIR
- local tmp_rd=$RANDOM
- tmp_rd=`grep locale $GAMEDIR/WTF/[Cc]onfig.wtf` || return 1
- echo `echo $tmp_rd | sed 's/SET locale/g'`
+get_wtf_var() { # get gamelang from Config.wtf in $GAMEDIR
+ if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
+  return_var="`cat "$GAMEDIR"/WTF/[Cc]onfig.wtf | grep -i "[SsEeTt] $1" | sed "s/[Ss][Ee][Tt] $1//"`" && \
+  echo "$return_var"
+ fi
+  
+  return $?
 }
 update_lang () { # update realms lang
 	cp $CONFDIR/realm.conf $CONFDIR/realm.old
@@ -356,6 +359,18 @@ init_app () { # test something and load variables of WoW version
 #\\wine       test "$WINE_DESKTOP" = 1 && WINE_DESKTOP='800x600'
 #\\wine       wine_args="explorer /desktop=Wow$$,$WINE_DESKTOP"
 #\\wine     fi
+
+  case $CACHE_ACCOUNT_NAME in
+    1|true)
+	if [ -e "$server_related_cache/$selected_server" ] ; then
+	    . "$server_related_cache/$selected_server"  
+	    if [ -n "$USER_ACCOUNT_NAME" ] ; then
+	      if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
+		del_var accountName "$GAMEDIR"/WTF/[Cc]onfig.wtf
+		echo "set accountName $USER_ACCOUNT_NAME" >> "$GAMEDIR"/WTF/[Cc]onfig.wtf
+	      fi
+	    fi
+	fi
   else
     tmp_msg="no WoW version for the $serverver found"
     return 1
@@ -388,6 +403,13 @@ END
 #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
   
   rm "$GAMEDIR/$server_wowclient" > /dev/null 2>&1
+
+  case $CACHE_ACCOUNT_NAME in
+    1|true)
+	USER_ACCOUNT_NAME="`get_wtf_var accountName`"  && \
+	echo "USER_ACCOUNT_NAME=$USER_ACCOUNT_NAME" > "$server_related_cache"/$selected_server
+	;;
+  esac
 #\\wine  set_wine_ver
 #  unset dt
 #\\wine  unset BIN 
