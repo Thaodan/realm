@@ -1,0 +1,8 @@
+servername="Feenix_WoW (1.12)"
+realm=vanillafeenix.servegame.org
+update=$realm
+serverver=1.21
+addon=0
+cfg_ver=0.9
+owner='Björn Bidar' # owner of cfg file
+ownermail='theodorstormgrade@googlemail.com'

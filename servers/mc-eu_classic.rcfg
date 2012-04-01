@@ -1,0 +1,8 @@
+servername="Molten Core WoW (1.12)" 
+realm=logon.mc-wow.eu
+update=$realm
+serverver=1.21
+addon=0
+owner='Björn Bidar' 
+ownermail='theodorstormgrade@googlemail.com'
+cfg_ver=0.9

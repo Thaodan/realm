@@ -1,0 +1,8 @@
+servername="Feenix WoW bc (2.4.3)"
+realm=burningcrusade.servegame.org
+update=$realm
+serverver=2.4.3
+addon=1
+owner='Björn Bidar' # owner of cfg file
+ownermail='theodorstormgrade@googlemail.com'
+cfg_ver=0.9
