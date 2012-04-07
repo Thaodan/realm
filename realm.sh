@@ -367,17 +367,18 @@ init_app () { # test something and load variables of WoW version
 #\\wine       wine_args="explorer /desktop=Wow$$,$WINE_DESKTOP"
 #\\wine     fi
 
-  case $CACHE_ACCOUNT_NAME in
-    1|true)
-	if [ -e "$server_related_cache/$selected_server" ] ; then
-	    . "$server_related_cache/$selected_server"  
-	    if [ -n "$USER_ACCOUNT_NAME" ] ; then
-	      if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
-		del_var accountName "$GAMEDIR"/WTF/[Cc]onfig.wtf
-		echo "set accountName $USER_ACCOUNT_NAME" >> "$GAMEDIR"/WTF/[Cc]onfig.wtf
+    case $CACHE_ACCOUNT_NAME in
+      1|true)
+	  if [ -e "$server_related_cache/$selected_server" ] ; then
+	      . "$server_related_cache/$selected_server"  
+	      if [ -n "$USER_ACCOUNT_NAME" ] ; then
+		if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
+		  del_var accountName "$GAMEDIR"/WTF/[Cc]onfig.wtf
+		  echo "set accountName $USER_ACCOUNT_NAME" >> "$GAMEDIR"/WTF/[Cc]onfig.wtf
+		fi
 	      fi
-	    fi
-	fi
+	  fi
+    esac
   else
     tmp_msg="no WoW version for the $serverver found"
     return 1
@@ -769,6 +770,7 @@ else
   . $CONFDIR/realm.conf
 fi
 
+
 case $1 in
  *.rcfg) # if input is a rcfg file display info
     if [ ! -z $realm_term ] ; then
@@ -816,6 +818,7 @@ case $1 in
  -s|--settings) setlang && settings ;;
  --cfg-info| --app-info) setlang ; cfg_info  $2 ;;
  cmd) setlang ; "$2" $3 ;;
+-*) : ;;
 # start realm gui
  *)
   test "$TERM" = "dumb" && exec realm --window && exit $? # run realm in window if is not runned from terminal
