@@ -20,7 +20,7 @@
 #
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
-REALM_REVISION=2290  # + 30 per change
+REALM_REVISION=2350  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 servercfgdir=$CONFDIR/servers # set server rcfg content dir ( realm content file gen2)
@@ -295,7 +295,14 @@ edit_realmlist () { # edit realm list of selected wow version
     echo "set realmlist $realm">"$DESTINATION/realmlist.wtf"
     echo "set patchlist $update">>"$DESTINATION/realmlist.wtf"
 }
-
+redirect_output() { # reairect  input to log file and screen
+  if [ $# = 0 ] ; then
+      while read stdin ; do # read stdin put it in var $stdin and use  it in a loop
+	echo $stdin >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1
+#\\print_log_instant	echo $stdin
+      done
+  fi
+}
 print_log () {
   echo --------------------------------------------------------------------------------
   echo \# "$APPNAME : print_log"                                                     \#
@@ -397,9 +404,9 @@ execute_app () {
 END
   cd "$GAMEDIR"
   
-#\\lin_wow_client sh -c "$exe" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1  & # hope they'll release the linux client some day :D
-#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
-#\\mac_os_xsh -c "open $exe" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1  &
+#\\lin_wow_client sh -c "$exe" | redirect_output   & # hope they'll release the linux client some day :D
+#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\" | redirect_output
+#\\mac_os_xsh -c "open $exe" | redirect_output &
 #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
   
   rm "$GAMEDIR/$server_wowclient" > /dev/null 2>&1
