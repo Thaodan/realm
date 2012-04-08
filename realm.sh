@@ -406,7 +406,7 @@ END
   cd "$GAMEDIR"
   
 #\\lin_wow_client sh -c "$exe" | redirect_output   & # hope they'll release the linux client some day :D
-#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\" | redirect_output
+#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" | redirect_output
 #\\mac_os_xsh -c "open $exe" | redirect_output &
 #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
   
