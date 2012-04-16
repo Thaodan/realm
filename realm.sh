@@ -20,7 +20,7 @@
 #
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
-REALM_REVISION=2350  # + 30 per change
+REALM_REVISION=2470  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 servercfgdir=$CONFDIR/servers # set server rcfg content dir ( realm content file gen2)
@@ -151,7 +151,23 @@ setlang () { # set displayed messages
 #\\wine   fi
 #\\wine }
 
-
+#\\winecheck_wineserver() {
+#\\wine   if ps ax | grep wineserver | grep -vq grep ; then
+#\\wine      echo --------------------------------------------------------------------------------
+#\\wine    echo "An other wineserver is running,"
+#\\wine	   echo "kill him (any other procces that run on wineserver will killed too)? (y|n)"
+#\\wine    echo --------------------------------------------------------------------------------
+#\\wine    read answer
+#\\wine    if [ $answer = y ] ; then 
+#\\wine	  "$BINPATH"wineboot -e
+#\\wine   pkill -U $UID  wineserver
+#\\wine	  return 0
+#\\wine    else
+#\\wine	     tmp_msg="wineserver was not killed"
+#\\wine      return 1
+#\\wine    fi
+#\\wine  fi
+#\\wine}
 
 #\\mac_os_xxterm() { # wrapper for mac os terminal application
 #\\mac_os_x open /Applications/Utilities/Terminal.app $@
@@ -263,7 +279,6 @@ LIST
 #\\d echo $input
 #\\d echo ${content[$run]}
     for ((run=${#content[*]}; run >= 0;run--)) ; do
-      echo $run > test.log
       if [ "$input" = "${content[$run]}" ] || [ "$input" = $run ]  > /dev/null 2>&1 ; then
 #       unset serverlist
 #       unset serverlist_cfg
@@ -295,14 +310,7 @@ edit_realmlist () { # edit realm list of selected wow version
     echo "set realmlist $realm">"$DESTINATION/realmlist.wtf"
     echo "set patchlist $update">>"$DESTINATION/realmlist.wtf"
 }
-redirect_output() { # reairect  input to log file and screen
-  if [ $# = 0 ] ; then
-      while read stdin ; do # read stdin put it in var $stdin and use  it in a loop
-	echo $stdin >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1
-#\\print_log_instant	echo $stdin
-      done
-  fi
-}
+
 print_log () {
   echo --------------------------------------------------------------------------------
   echo \# "$APPNAME : print_log"                                                     \#
@@ -350,15 +358,15 @@ init_app () { # test something and load variables of WoW version
       echo "wowver=$wowver"
 #\\wine      echo "WINEVER=${WINEPATH:=default: system installed}"
     fi
-#\\wine     if [ -n $PREFIX ]; then
-#\\wine       WINEPREFIX=$PREFIX
-#\\wine     else
-#\\wine       WINEPREFIX=$HOME/.wine
-#\\wine     fi
+#\\wine     WINEPREFIX=${PREFIX:-$HOME/.wine}
+#\\wine
 #\\wine     if [ -z $BIN ] ; then
 #\\wine       BIN=wine
 #\\wine     fi
-#\\wine     test -z $WINEPATH || set_wine_ver "$WINEPATH"
+#\\wine     if [ ! -z "$WINEPATH" ] ; then
+#\\wine		set_wine_ver "$WINEPATH"
+#\\wine		check_wineserver || return 1
+#\\wine     fi
 #\\wine     if [ -z $WINEDEBUG ]; then
 #\\wine       export WINEDEBUG=fixme-all
 #\\wine     fi
@@ -397,7 +405,7 @@ execute_app () {
   clear_cache
   mkdir -p $CONFDIR/logs
   cat > $CONFDIR/logs/wow$serverver_$dt.log <<END
-# started app info :  ^
+# started app info :  
 # name : `basename "$exe"`
 # ver : $wowver
 #\\wine# wine bin : `basename $BIN`
@@ -405,9 +413,9 @@ execute_app () {
 END
   cd "$GAMEDIR"
   
-#\\lin_wow_client sh -c "$exe" | redirect_output   & # hope they'll release the linux client some day :D
-#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" | redirect_output
-#\\mac_os_xsh -c "open $exe" | redirect_output &
+#\\lin_wow_client sh -c "$exe" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "   & # hope they'll release the linux client some day :D
+#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "" &
+#\\mac_os_xsh -c "open $exe"  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
 #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
   
   rm "$GAMEDIR/$server_wowclient" > /dev/null 2>&1
@@ -813,7 +821,7 @@ case $1 in
       ;;
 #\\mac_os_x-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && open "$GAMEDIR" ;;
 #\\unix-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && xdg-open "$GAMEDIR" ;;
- --xterm|--term|--window) declare -x realm_term=1 && exec xterm -title $APPNAME `which $0` ; exit 0 ;;
+ --xterm|--term|--window) declare -x realm_term=1 && exec xterm -title $APPNAME -e `which $0 || echo $0` ; exit 0 ;;
  -n) gen_conf ;;
  -s|--settings) setlang && settings ;;
  --cfg-info| --app-info) setlang ; cfg_info  $2 ;;
