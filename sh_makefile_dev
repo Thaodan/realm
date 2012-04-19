@@ -1,5 +1,5 @@
-target_root=build/1.2.4-`bash realm.sh --revision`-wine
-app=realm.sh:launcher.png
+target_root=build/1.2.4-`bash realm --revision`-wine
+app=realm:launcher.png
 target=bin:share/icons
 DEFINED_FLAGS=wine:wow_lin_client
 flags=wine
