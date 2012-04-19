@@ -61,4 +61,15 @@
   change: now have to press q to quit realm after wow is terminated instead of any key
   now realm terminates wow when q r or l is pressed after wow is launched
   change: realm now prints servernames instead of the name of their cfg-file
+
+1.2.4
+  added some Mac OS X specific functions and code
+  added support for cataclysm
+ 
+  added $WINE_DESKTOP variable support to tell realm to run application in virtual design for application files (for example: WINE_DESKTOP=800x600)
+
+  dome some code clean up
+
+  
+  
  

@@ -1,5 +1,13 @@
-target_root=../vers/1.2.4-`bash realm.sh --revision`-wine
-app=realm.sh:launcher.png
-target=bin:share/icons
+target_root=build/1.2.4-`bash realm.sh --revision`-wine
+app=realm.sh:launcher.png:realm_wow.desktop:servers
+target=bin:share/icons:share/applications:share/realm
 DEFINED_FLAGS=wine:wow_lin_client
 flags=wine
+
+install_sh=true
+POST_INSTALL_MSG='start realm -n to generate config file(es)'
+APPNAME=realm
+
+VER=1.2.4
+
+
