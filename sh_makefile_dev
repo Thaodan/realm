@@ -13,6 +13,6 @@ VER=1.2.4
 
 install_sh_make() {
 
-  install $target_root/bin/realm.sh $HOME/.local/bin/realm
+  install $target_root/bin/realm  $HOME/.local/bin/realm
 
 }
