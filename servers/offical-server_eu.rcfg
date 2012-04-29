@@ -1,3 +1,4 @@
+servername="Offical Blizzard Servers"
 realm="eu.logon.worldofwarcraft.com" 
 update="eu.version.worldofwarcraft.com"
 serverver=4.x # here enter the version of your server/realm 
