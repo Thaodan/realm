@@ -20,13 +20,14 @@
 #
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
-REALM_REVISION=2470  # + 30 per change
+REALM_REVISION=2500  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
-servercfgdir=$CONFDIR/servers # set server rcfg content dir ( realm content file gen2)
+APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara
+servercfgdir=$APPLICATION_XDG_SHARE/servers # set server rcfg content dir ( realm content file gen2)
 appdir=$CONFDIR/applications # set  application rcfg content dir
 rcfg_cache=${XDG_CACHE_HOME:=$HOME/.cache}/realm/content # set rcfg_cache  cache 
-APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara
+
 server_related_cache=${XDG_CACHE_HOME:-$HOME/.cache}/realm/server_related
 
 #\\mac_os_xexe="World of Warcraft.app"

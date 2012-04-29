@@ -11,7 +11,7 @@ APPNAME=realm
 VER=1.2.4
 
 
-install() {
+install_sh_make() {
 
 /bin/install $target_root/bin/realm.sh $HOME/.local/bin/realm
 
