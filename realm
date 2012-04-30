@@ -20,6 +20,7 @@
 #
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
+#\\mingwREALM_VERSION=1.2.4-mingw
 REALM_REVISION=2500  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
@@ -64,7 +65,6 @@ setlang () { # set displayed messages
 #\\wine	PREFIXL='Please enter prefixdir, for the WoW version ( enter nothing if the defaul prefix $HOME/.wine is used)'
 	SERVEROFMSG="It seems that the server is offline, go to server website or write an e-mail to $owner at $ownermail for info."
 	WELCOME="Wow server selecter and starter $REALM_VERSION"
-	#LNOTE='Please change also the value "set locale "your language code" " , in WTF/config.wtf at your Wow folder'
 	BACK='back'
 	BACKN='To go back enter back'
 	CFGER='Server information file inorrect (incomplete), please contact the noun for help'
@@ -108,8 +108,6 @@ setlang () { # set displayed messages
 #\\wine	PREFIXL='Bitte geben sie den Pfad der Pefixes für die WoW Version ein (wenn Standard Prefix $HOME/.wine , genutzt wird Eingabe bitte leer lassen)'
 	SERVEROFMSG="Es scheint als sei der Server offline, für Infos auf Serverwebsite gehen oder ein E-mail zu $owner an $ownermail" 
 	WELCOME="Wow Server selecter und starter $REALM_VERSION"
-	#LNOTE='Wenn sie die Sprache ändern um die zu ändernde realmlist.wtf zu ändern dann müssen sie in ihrem Wow Ordner
-	#     unter WTF/config.wtf den Wert "set locale "ihr Sprachcode" " in den Sprachcode ihrer Sprache ändern'
 	BACK='zurück'
 	BACKN='Um zurück zu gehen geben sie dies ein.'
 	CFGER='Server Informations Datei Fehlerhaft (unvollständig), bitte kontaktieren sie den Urheber für Hilfe'
@@ -414,11 +412,11 @@ execute_app () {
 END
   cd "$GAMEDIR"
   
-#\\lin_wow_client sh -c "$exe" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "   & # hope they'll release the linux client some day :D
-#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "" &
+#\\lin_wow_client sh -c ""$exe" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "   & # hope they'll release the linux client some day :D
+#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1  &
 #\\mac_os_xsh -c "open $exe"  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
 #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
-  
+#\\mingw exec ""$exe"  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
   rm "$GAMEDIR/$server_wowclient" > /dev/null 2>&1
 
   case $CACHE_ACCOUNT_NAME in
@@ -691,13 +689,13 @@ LIST
 	  echo --------------------------------------------------------------------------------
 #\\wine 	  case $wowver in #\\wine case wow version is greater than 3 add $(GAMEDIRL) to $r_input
 #\\wine 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng Prefix $BACK ) ;;
-#\\wine 	  *)  r_input=( Version $GAMEDIRL  Prefix $BACK )
+#\\wine 	  *)  r_input=( Version $GAMEDIRL  Prefix $BACK ) ;;
 #\\mac_os_x 	  case $wowver in #\\mac_os_x case wow version is greater than 3 add $(GAMEDIRL) to $r_input
 #\\mac_os_x 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
-#\\mac_os_x 	  *)  r_input=( Version $GAMEDIRL  $BACK )
+#\\mac_os_x 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
 #\\wow_lin_client 	  case $wowver in #  case wow version is greater than 3 add $(GAMEDIRL) to $r_input
 #\\wow_lin_client 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
-#\\wow_lin_client 	  *)  r_input=( Version $GAMEDIRL  $BACK )
+#\\wow_lin_client 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
 #\\all	  esac
 	  echo "$CFGEDITL"
 	  for ((i_no=0;  i_no <= $(( ${#r_input[*]} - 1 )); i_no++)); do  
@@ -770,14 +768,14 @@ LIST
 	esac
       done
 }
-if [ $1 = -n  ]  > /dev/null 2>&1 ; then
-  gen_conf 
-elif [ ! -e $CONFDIR/realm.conf ]; then
-      echo "realm.conf don't exist in $CONFIGDIR, please start realm with -n to setup a new one" >&2
-      exit 1
-else
-  . $CONFDIR/realm.conf
-fi
+#\\allif [ $1 = -n  ]  > /dev/null 2>&1 ; then
+#\\all gen_conf 
+#\\allelif [ ! -e $CONFDIR/realm.conf ]; then
+#\\all  echo "realm.conf don't exist in $CONFIGDIR, please start realm with -n to setup a new one" >&2
+#\\all  exit 1
+#\\allelse
+#\\all . $CONFDIR/realm.conf
+#\\allfi
 
 
 case $1 in
