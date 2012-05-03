@@ -1,6 +1,6 @@
 target_root=build/1.2.4-`bash realm --revision`-mingw
-app=realm:launcher.png:servers
-target=bin:share/icons:share/realm
+app=realm.cmd:realm:launcher.png:servers
+target=.:bin:share/icons:share/realm
 DEFINED_FLAGS=wine:wow_lin_client
 flags=
 host=MINGW32
