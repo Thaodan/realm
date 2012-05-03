@@ -9,4 +9,4 @@ mkdir %XDG_DATA_HOME% > NUL
 mkdir %XDG_CACHE_HOME% > NUL
 mkdir %XDG_CONFIG_HOME% > NUL
 
-bash %CD%\realm %*
+bash %CD%\bin\realm %*
