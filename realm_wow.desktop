@@ -1,0 +1,12 @@
+[Desktop Entry]
+Categories=Game;RolePlaying;
+Comment=Start World of Wacraft with realm
+Exec=realm --window
+GenericName=MMORPG in Warcraft universe
+GenericName[de]=Onlinerollenspiel im Warcraft Universum
+Icon=/home/bidar/.local/share/icons/realm_wow_launcher.png
+Name=World of Warcraft
+StartupNotify=true
+Terminal=0
+TerminalOptions=
+Type=Application
