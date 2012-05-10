@@ -21,7 +21,7 @@
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
 #\\mingwREALM_VERSION=1.2.4-mingw
-REALM_REVISION=2530  # + 30 per change
+REALM_REVISION=2560  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara
@@ -693,6 +693,9 @@ LIST
 #\\mac_os_x 	  case $wowver in #\\mac_os_x case wow version is greater than 3 add $(GAMEDIRL) to $r_input
 #\\mac_os_x 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
 #\\mac_os_x 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
+#\\mingw 	  case $wowver in #\\mingw case wow version is greater than 3 add $(GAMEDIRL) to $r_input
+#\\mingw 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
+#\\mingw 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
 #\\wow_lin_client 	  case $wowver in #  case wow version is greater than 3 add $(GAMEDIRL) to $r_input
 #\\wow_lin_client 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
 #\\wow_lin_client 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
@@ -819,6 +822,7 @@ case $1 in
       mkdir -p $APPLICATION_XDG_SHARE/lang
       ;;
 #\\mac_os_x-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && open "$GAMEDIR" ;;
+#\\mingw-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && explorer "$GAMEDIR" ;;
 #\\unix-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && xdg-open "$GAMEDIR" ;;
  --xterm|--term|--window) declare -x realm_term=1 && exec xterm -title $APPNAME -e `which $0 || echo $0` ; exit 0 ;;
  -n) gen_conf ;;
