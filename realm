@@ -411,12 +411,18 @@ execute_app () {
 #\\wine# wine ver : `$BIN --version`
 END
   cd "$GAMEDIR"
-  
-#\\lin_wow_client sh -c ""$exe" | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "   & # hope they'll release the linux client some day :D
-#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1  &
-#\\mac_os_xsh -c "open $exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+
+#\\lin_wow_client sh -c "$exe >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 ""   & # hope they'll release the linux client some day :D
+#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1" & 
+#\\mac_os_xsh -c "open $exe  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
 #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
-#\\mingw exec ""$exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+#\\mingw exec "$exe  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+# #\\lin_wow_client sh -c ""$exe" | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "   & # hope they'll release the linux client some day :D
+# #\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" | tee $CONFDIR/logs/wow$serverver_$dt.log &
+# #\\mac_os_xsh -c "open $exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+# #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
+# #\\mingw exec ""$exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+
   rm "$GAMEDIR/$server_wowclient" > /dev/null 2>&1
 
   case $CACHE_ACCOUNT_NAME in
