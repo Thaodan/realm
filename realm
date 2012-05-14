@@ -363,8 +363,8 @@ init_app () { # test something and load variables of WoW version
 #\\wine       BIN=wine
 #\\wine     fi
 #\\wine     if [ ! -z "$WINEPATH" ] ; then
-#\\wine		set_wine_ver "$WINEPATH"
 #\\wine		check_wineserver || return 1
+#\\wine		set_wine_ver "$WINEPATH"
 #\\wine     fi
 #\\wine     if [ -z $WINEDEBUG ]; then
 #\\wine       export WINEDEBUG=fixme-all
@@ -656,7 +656,7 @@ settings () { # settings dialog
 		# get how many apps where scanned
 		local applist_size=${#applist[*]}
     
-		# add new app (§GAMEDIRLNA) option to applist
+		# add new app ($GAMEDIRLNA) option to applist
 
 		local applist[$applist_size]="$GAMEDIRLNA"
 		
