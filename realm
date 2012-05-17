@@ -21,7 +21,7 @@
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
 #\\mingwREALM_VERSION=1.2.4-mingw
-REALM_REVISION=2560  # + 30 per change
+REALM_REVISION=2620  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara
@@ -373,7 +373,7 @@ init_app () { # test something and load variables of WoW version
 #\\wine       test "$WINE_DESKTOP" = 1 && WINE_DESKTOP='800x600'
 #\\wine       wine_args="explorer /desktop=Wow$$,$WINE_DESKTOP"
 #\\wine     fi
-
+    clear_cache
     case $CACHE_ACCOUNT_NAME in
       1|true)
 	  if [ -e "$server_related_cache/$selected_server" ] ; then
@@ -401,8 +401,6 @@ clear_cache () { # clears cache/WDB directory of WoW Version
 }
 execute_app () {
   dt=`date +%d_%m_%Y_%H_%M`
-  clear_cache
-  mkdir -p $CONFDIR/logs
   cat > $CONFDIR/logs/wow$serverver_$dt.log <<END
 # started app info :  
 # name : `basename "$exe"`
@@ -423,25 +421,27 @@ END
 # #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
 # #\\mingw exec ""$exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
 
-  rm "$GAMEDIR/$server_wowclient" > /dev/null 2>&1
+}
+del_var () { # del variable in file
+  file="$1"
+  sed -i "/$2/d" $file
+}
 
+end_app() {
+  if [ ! -z "$server_wowclient" ] ; then
+    rm "$GAMEDIR/$server_wowclient" 
+  fi
   case $CACHE_ACCOUNT_NAME in
     1|true)
 	USER_ACCOUNT_NAME="`get_wtf_var accountName`"  && \
 	echo "USER_ACCOUNT_NAME=$USER_ACCOUNT_NAME" > "$server_related_cache"/$selected_server
 	;;
   esac
+#\\wine "$BINPATH"/wineboot -e 
 #\\wine  set_wine_ver
-#  unset dt
 #\\wine  unset BIN 
-  unset wowver
-  unset WINEPATH
- # unset exe 
- # unset serverver
-}
-del_var () { # del variable in file
-  file="$1"
-  sed -i "/$2/d" $file
+#\\wine  unset WINEPATH
+
 }
 cfg_info () { # display info off cfg files
   if [ $# -lt 1 ]; then
@@ -819,6 +819,7 @@ case $1 in
    init_app && \
    edit_realmlist && \	
    execute_app 
+   end_app
    ;;
 # other options
   --init) # create needed application directorys 
@@ -858,6 +859,7 @@ case $1 in
     fi
     edit_realmlist
     execute_app
+    end_app
     run_vars=serverver:dt:wowver:exe
     if [ ! -z $realm_term ] ; then
       echo --------------------------------------------------------------------------------
