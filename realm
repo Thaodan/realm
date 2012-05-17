@@ -814,7 +814,7 @@ case $1 in
  --version) echo "$REALM_VERSION:${REALM_REVISION:=0}" ;;
  --revision) echo $REALM_REVISION ;;
  -s|--server) 
-   cfg_info "$1.rcfg" > /dev/null 2>&1  || echo "Error occured while loading server file" >&2 ; exit 1 
+   cfg_info "$2" > /dev/null 2>&1  || echo "Error occured while loading server file" >&2 ; exit 1 
 #   . $servercfgdir/$1.rcfg
    init_app && \
    edit_realmlist && \	
