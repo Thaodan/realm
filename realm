@@ -437,7 +437,7 @@ end_app() {
 	echo "USER_ACCOUNT_NAME=$USER_ACCOUNT_NAME" > "$server_related_cache"/$selected_server
 	;;
   esac
-#\\wine "$BINPATH"/wineboot -e 
+#\\#\\wine "$BINPATH"/wineboot -e 
 #\\wine  set_wine_ver
 #\\wine  unset BIN 
 #\\wine  unset WINEPATH
