@@ -814,12 +814,15 @@ case $1 in
  --version) echo "$REALM_VERSION:${REALM_REVISION:=0}" ;;
  --revision) echo $REALM_REVISION ;;
  -s|--server) 
-   cfg_info "$2" > /dev/null 2>&1  || echo "Error occured while loading server file" >&2 ; exit 1 
+   if  cfg_info "$2" > /dev/null 2>&1 ; then  
 #   . $servercfgdir/$1.rcfg
-   init_app && \
-   edit_realmlist && \	
-   execute_app 
-   end_app
+    init_app && \
+    edit_realmlist && \	
+    execute_app 
+    end_app
+   else
+    echo "Error occured while loading server file" >&2 
+   fi
    ;;
 # other options
   --init) # create needed application directorys 
