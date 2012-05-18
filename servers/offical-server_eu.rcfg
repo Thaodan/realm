@@ -5,6 +5,3 @@ serverver=4.x # here enter the version of your server/realm
 owner=stub
 ownermail=stub 
 cfg_ver=1.7
-server_launcher=Launcher.exe
-server_wowclient=$exe
-

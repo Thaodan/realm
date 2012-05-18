@@ -21,7 +21,7 @@
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
 #\\mingwREALM_VERSION=1.2.4-mingw
-REALM_REVISION=2620  # + 30 per change
+REALM_REVISION=2650  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara
@@ -209,9 +209,11 @@ test_server_status () { # test if server is offline
 #\\if defined cataclysm 
 sync_rcfg_content() { # sync_rcfg_content $sever_launcher (testserver_launcher.exe, testserver_Wow.exe) with realm content cache
   for var in "$server_launcher" "$server_wowclient" ; do
-    if [ $var -nt "$rcfg_cache"/"`basename $var`" ] ; then
-      mkdir -p $rcfg_cache/$selected_server
-      wget $wget_download_options $var --output-document=$rcfg_cache/$selected_server/"`basename $var`" || return 1
+    if [ -z "$var" ] ; then
+      if [ "$var" -nt "$rcfg_cache"/"`basename $var`" ] ; then
+	mkdir -p $rcfg_cache/$selected_server
+	wget $wget_download_options $var --output-document=$rcfg_cache/$selected_server/"`basename $var`" || return 1
+      fi
     fi
   done
   unset var
@@ -333,8 +335,10 @@ init_app () { # test something and load variables of WoW version
     case $wowver in 
       4.*)
 	sync_rcfg_content || tmp_msg=stub; return 1
-	ln -s $rcfg_cache/"`basename $server_wowclient $GAMEDIR/$server_wowclient`"
-	exe="$server_wowclient"
+	if [ -z "$server_wowclient"  ] ; then 
+	  ln -s $rcfg_cache/"`basename $server_wowclient $GAMEDIR/$server_wowclient`"
+	  exe="$server_wowclient"
+	fi
 	;;
       *)
   #\\endif
@@ -531,7 +535,7 @@ END
 	   $BACK) continue 3 || return $?  ;;
 	esac
       done
-#\\      exe='wow.exe'
+#\\wine      exe='Wow.exe'
 #\\mac_os_x	exe="World of Warcraft.app"
 #\\wow_lin_client	exe=WowClient
 
@@ -543,7 +547,7 @@ END
       echo "$PREFIXL"
       echo --------------------------------------------------------------------------------
       read PREFIX
-      cat > $appdir/wow$GAMEDIRVER.cfg <<END
+      cat > $appdir/wow$GAMEDIRVER.rcfg <<END
 appname=World\ of\ Warcraft\ $2
 GAMEDIR=$GAMEDIR
 exe=$exe
