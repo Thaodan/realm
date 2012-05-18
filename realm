@@ -523,6 +523,7 @@ END
 	   'Classic (1.21)') GAMEDIRVER=1.21 ; break ;;
 	   'Burning Crusade (2.4.3)') GAMEDIRVER=2.4.3 ; break ;;
 	   'Wrath Of The Lich King (3.3.3)') GAMEDIRVER=3.3.3 ;  break ;;
+	   'Cataclysm 4.x') GAMEDIRVER=4.x; break ;;
 	   other)
 	    echo "$GAMEDIRVERL"
 	    echo "$BACKN"
