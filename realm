@@ -21,7 +21,7 @@
 #\\mac_os_xREALM_VERSION=1.2.4-osx
 #\\unixREALM_VERSION=1.2.4
 #\\mingwREALM_VERSION=1.2.4-mingw
-REALM_REVISION=2650  # + 30 per change
+REALM_REVISION=2680  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara
@@ -209,7 +209,7 @@ test_server_status () { # test if server is offline
 #\\if defined cataclysm 
 sync_rcfg_content() { # sync_rcfg_content $sever_launcher (testserver_launcher.exe, testserver_Wow.exe) with realm content cache
   for var in "$server_launcher" "$server_wowclient" ; do
-    if [ -z "$var" ] ; then
+    if [ ! -z "$var" ] ; then
       if [ "$var" -nt "$rcfg_cache"/"`basename $var`" ] ; then
 	mkdir -p $rcfg_cache/$selected_server
 	wget $wget_download_options $var --output-document=$rcfg_cache/$selected_server/"`basename $var`" || return 1
@@ -331,6 +331,7 @@ print_log () {
 }
 init_app () { # test something and load variables of WoW version
   if [ -e $appdir/wow$serverver.rcfg ]; then
+    . $appdir/wow$serverver.rcfg
     #\\wineifdef cataclysm 
     case $wowver in 
       4.*)
@@ -351,7 +352,6 @@ init_app () { # test something and load variables of WoW version
       ;;
     esac
 #\\endif
-    . $appdir/wow$serverver.rcfg
     if [ ! -z $run_funcs ] ; then
       fakeroot -- "$appdir/wow$serverver.rcfg ; old_ifs=\$IFS ; IFS=: for var in \$run_funcs ; do IFS=\$old_ifs ; \$var ; IFS=: ; done IFS=\$old_ifs" 
     fi
@@ -868,7 +868,7 @@ case $1 in
     edit_realmlist
     execute_app
     end_app
-    run_vars=serverver:dt:wowver:exe
+    run_vars=serverver:dt:wowver:exe:server_launcher:server_wowclient
     if [ ! -z $realm_term ] ; then
       echo --------------------------------------------------------------------------------
       echo "$TEMSG"
@@ -878,20 +878,20 @@ case $1 in
     #  }
       ext=1
       while [ ! $ext = "" ] ; do 
-      read last
-      if [ $last = r ] > /dev/null 2>&1 ; then
-	pkill `basename "$exe"` 
-	reset_run_vars
-	ext=
-	clear
-	continue 2
-      elif [ $last = l ] > /dev/null 2>&1 ; then
-	 pkill `basename "$exe"`
-	 print_log
-      elif [ $last = q ] > /dev/null 2>&1 ; then
-	pkill `basename "$exe"`
-	exit $?
-      fi
+	read last
+	if [ $last = r ] > /dev/null 2>&1 ; then
+	  pkill `basename "$exe"` 
+	  reset_run_vars
+	  ext=
+	  clear
+	  continue 2
+	elif [ $last = l ] > /dev/null 2>&1 ; then
+	  pkill `basename "$exe"`
+	  print_log
+	elif [ $last = q ] > /dev/null 2>&1 ; then
+	  pkill `basename "$exe"`
+	  exit $?
+	fi
       done
    #   }
 
