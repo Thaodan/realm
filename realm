@@ -823,8 +823,14 @@ case $1 in
 #   . $servercfgdir/$1.rcfg
     init_app && \
     edit_realmlist && \	
-    execute_app 
+    execute_app && \ 
     end_app
+    if [ !$? = 0 -o ! -z "$tmp_msg" ] ; then
+      if [ ! -z "$tmp_msg"  ] ; then
+	echo "$tmp_msg" >&2
+      fi
+      exit $?
+    fi
    else
     echo "Error occured while loading server file" >&2 
    fi
@@ -841,7 +847,7 @@ case $1 in
 #\\unix-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && xdg-open "$GAMEDIR" ;;
  --xterm|--term|--window) declare -x realm_term=1 && exec xterm -title $APPNAME -e `which $0 || echo $0` ; exit 0 ;;
  -n) gen_conf ;;
- -s|--settings) setlang && settings ;;
+ -S|--conf|--settings) setlang && settings ;;
  --cfg-info| --app-info) setlang ; cfg_info  $2 ;;
  cmd) setlang ; "$2" $3 ;;
 -*) : ;;
@@ -868,7 +874,7 @@ case $1 in
     edit_realmlist
     execute_app
     end_app
-    run_vars=serverver:dt:wowver:exe:server_launcher:server_wowclient
+    run_vars=serverver:dt:wowver:exe:server_launcher:server_wowclient:tmp_msg
     if [ ! -z $realm_term ] ; then
       echo --------------------------------------------------------------------------------
       echo "$TEMSG"
