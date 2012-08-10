@@ -18,7 +18,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#\\mac_os_xREALM_VERSION=1.2.4-osx
+#\\mac_os_xREALM_VERSION=1.2.4-osxre
 #\\unixREALM_VERSION=1.2.4
 #\\mingwREALM_VERSION=1.2.4-mingw
 REALM_REVISION=2710  # + 30 per change
@@ -845,7 +845,7 @@ case $1 in
 #\\mac_os_x-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && open "$GAMEDIR" ;;
 #\\mingw-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && explorer "$GAMEDIR" ;;
 #\\unix-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && xdg-open "$GAMEDIR" ;;
- --xterm|--term|--window) declare -x realm_term=1 && exec xterm -title $APPNAME -e `which $0 || echo $0` ; exit 0 ;;
+ --xterm|--term|--window) declare -x realm_term=1 && exec xterm -fg white -bg black-title $APPNAME -e `which $0 || echo $0` ; exit 0 ;;
  -n) gen_conf ;;
  -S|--conf|--settings) setlang && settings ;;
  --cfg-info| --app-info) setlang ; cfg_info  $2 ;;
