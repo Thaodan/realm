@@ -18,9 +18,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-#\\mac_os_xREALM_VERSION=1.2.4-osxre
-#\\unixREALM_VERSION=1.2.4
-#\\mingwREALM_VERSION=1.2.4-mingw
+#\\!mac_os_xREALM_VERSION=1.2.4-osxre
+#\\!unixREALM_VERSION=1.2.4
+#\\!mingwREALM_VERSION=1.2.4-mingw
 REALM_REVISION=2710  # + 30 per change
 APPNAME=`basename $0` # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME=:$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
@@ -31,8 +31,8 @@ rcfg_cache=${XDG_CACHE_HOME:=$HOME/.cache}/realm/content # set rcfg_cache  cache
 
 server_related_cache=${XDG_CACHE_HOME:-$HOME/.cache}/realm/server_related
 
-#\\mac_os_xexe="World of Warcraft.app"
-#\\mac_os_xreadonly exe
+#\\!mac_os_xexe="World of Warcraft.app"
+#\\!mac_os_xreadonly exe
 
 
 setlang () { # set displayed messages
@@ -62,7 +62,7 @@ setlang () { # set displayed messages
 	GAMEDIRLL="Please enter the gamedir path, please add a ' at the end and the beginning"
 	GAMEDIRVERL0='Please select the wow version.'
 	GAMEDIRVERL='Please enter the version of the entered Wow installisation (only the 3 first letters !)'
-#\\wine	PREFIXL='Please enter prefixdir, for the WoW version ( enter nothing if the defaul prefix $HOME/.wine is used)'
+#\\!wine	PREFIXL='Please enter prefixdir, for the WoW version ( enter nothing if the defaul prefix $HOME/.wine is used)'
 	SERVEROFMSG="It seems that the server is offline, go to server website or write an e-mail to $owner at $ownermail for info."
 	WELCOME="Wow server selecter and starter $REALM_VERSION"
 	BACK='back'
@@ -105,7 +105,7 @@ setlang () { # set displayed messages
 	GAMEDIRLL='bitte geben sie den Pfad des Spieldordners ein, die Eingabe solte dabei in '' gefast sein'
 	GAMEDIRVERL0='Bitte wählen sie die WoW Version  aus.'
 	GAMEDIRVERL='Bitte geben sie die version der WoW installation an (nur die 3 ersten Zeichen !)'
-#\\wine	PREFIXL='Bitte geben sie den Pfad der Pefixes für die WoW Version ein (wenn Standard Prefix $HOME/.wine , genutzt wird Eingabe bitte leer lassen)'
+#\\!wine	PREFIXL='Bitte geben sie den Pfad der Pefixes für die WoW Version ein (wenn Standard Prefix $HOME/.wine , genutzt wird Eingabe bitte leer lassen)'
 	SERVEROFMSG="Es scheint als sei der Server offline, für Infos auf Serverwebsite gehen oder ein E-mail zu $owner an $ownermail" 
 	WELCOME="Wow Server selecter und starter $REALM_VERSION"
 	BACK='zurück'
@@ -133,44 +133,47 @@ setlang () { # set displayed messages
   esac	
 }
 
-#\\wine set_wine_ver () { # no comment
-#\\wine 
-#\\wine   if [ -z $1 ] ; then # unset wine version
-#\\wine     export LD_LIBRARY_PATH=
-#\\wine     export WINESERVER=
-#\\wine     export WINELOADER=
-#\\wine     export WINEDLLPATH=
-#\\wine     export BINPATH=
-#\\wine   else  # use wine version from path given by "$1"
-#\\wine     export LD_LIBRARY_PATH="$1"/lib:$LD_LIBRARY_PATH
-#\\wine     export WINSERVER="$1"/bin/wineserver
-#\\wine     export WINELOADER="$1"/bin/wine
-#\\wine     export WINEDLLPATH="$1"/lib/wine
-#\\wine     export BINPATH="$1"/bin/
-#\\wine   fi
-#\\wine }
+#\\ifdef WINE
+set_wine_ver () { # no comment
 
-#\\winecheck_wineserver() {
-#\\wine   if ps ax | grep wineserver | grep -vq grep ; then
-#\\wine      echo --------------------------------------------------------------------------------
-#\\wine    echo "An other wineserver is running,"
-#\\wine	   echo "kill him (any other procces that run on wineserver will killed too)? (y|n)"
-#\\wine    echo --------------------------------------------------------------------------------
-#\\wine    read answer
-#\\wine    if [ $answer = y ] ; then 
-#\\wine	  "$BINPATH"wineboot -e
-#\\wine   pkill -U $UID  wineserver
-#\\wine	  return 0
-#\\wine    else
-#\\wine	     tmp_msg="wineserver was not killed"
-#\\wine      return 1
-#\\wine    fi
-#\\wine  fi
-#\\wine}
+  if [ -z $1 ] ; then # unset wine version
+    export LD_LIBRARY_PATH=
+    export WINESERVER=
+    export WINELOADER=
+    export WINEDLLPATH=
+    export BINPATH=
+  else  # use wine version from path given by "$1"
+    export LD_LIBRARY_PATH="$1"/lib:$LD_LIBRARY_PATH
+    export WINSERVER="$1"/bin/wineserver
+    export WINELOADER="$1"/bin/wine
+    export WINEDLLPATH="$1"/lib/wine
+    export BINPATH="$1"/bin/
+fi
+}
 
-#\\mac_os_xxterm() { # wrapper for mac os terminal application
-#\\mac_os_x open /Applications/Utilities/Terminal.app $@
-#\\mac_os_x}
+check_wineserver() {
+   if ps ax | grep wineserver | grep -vq grep ; then
+      echo --------------------------------------------------------------------------------
+      echo "An other wineserver is running,"
+	   echo "kill him (any other procces that run on wineserver will killed too)? (y|n)"
+    echo --------------------------------------------------------------------------------
+    read answer
+    if [ $answer = y ] ; then 
+      "$BINPATH"wineboot -e
+      pkill -U $UID  wineserver
+	  return 0
+      else
+	     tmp_msg="wineserver was not killed"
+      return 1
+    fi
+  fi
+}
+
+#\\endif 
+
+#\\!mac_os_xxterm() { # wrapper for mac os terminal application
+#\\!mac_os_x open /Applications/Utilities/Terminal.app $@
+#\\!mac_os_x}
 
 
 print_err() {
@@ -206,7 +209,7 @@ test_server_status () { # test if server is offline
   fi
   
 }
-#\\if defined cataclysm 
+#\\ifdef cataclysm 
 sync_rcfg_content() { # sync_rcfg_content $sever_launcher (testserver_launcher.exe, testserver_Wow.exe) with realm content cache
   for var in "$server_launcher" "$server_wowclient" ; do
     if [ ! -z "$var" ] ; then
@@ -258,8 +261,8 @@ server_menu () { # display server selecter
       readonly content content_raw
   fi
 
-#\\d echo ${content[*]}
-#\\d echo ${#content[*]}
+#\\!DEBUG echo ${content[*]}
+#\\!DEBUG echo ${#content[*]}
   cat <<LIST
 $WELCOME
 --------------------------------------------------------------------------------
@@ -277,8 +280,8 @@ LIST
 # $exitn
 
   read input  # 1. $conf
-#\\d echo $input
-#\\d echo ${content[$run]}
+#\\!DEBUG echo $input
+#\\!DEBUG echo ${content[$run]}
     for ((run=${#content[*]}; run >= 0;run--)) ; do
       if [ "$input" = "${content[$run]}" ] || [ "$input" = $run ]  > /dev/null 2>&1 ; then
 #       unset serverlist
@@ -332,7 +335,7 @@ print_log () {
 init_app () { # test something and load variables of WoW version
   if [ -e $appdir/wow$serverver.rcfg ]; then
     . $appdir/wow$serverver.rcfg
-    #\\wineifdef cataclysm 
+#\\ifdef cataclysm 
     case $wowver in 
       4.*)
 	sync_rcfg_content || tmp_msg=stub; return 1
@@ -342,7 +345,7 @@ init_app () { # test something and load variables of WoW version
 	fi
 	;;
       *)
-  #\\endif
+#\\endif
       if ! test_server_status ; then
 	setlang
 	tmp_msg="$SERVEROFMSG"
@@ -359,24 +362,26 @@ init_app () { # test something and load variables of WoW version
       echo "gamedir=$GAMEDIR"
       echo "exe=$exe"
       echo "wowver=$wowver"
-#\\wine      echo "WINEVER=${WINEPATH:=default: system installed}"
+#\\!WINE      echo "WINEVER=${WINEPATH:=default: system installed}"
     fi
-#\\wine     export WINEPREFIX=${PREFIX:-$HOME/.wine}
-#\\wine
-#\\wine     if [ -z $BIN ] ; then
-#\\wine       BIN=wine
-#\\wine     fi
-#\\wine     if [ ! -z "$WINEPATH" ] ; then
-#\\wine		check_wineserver || return 1
-#\\wine		set_wine_ver "$WINEPATH"
-#\\wine     fi
-#\\wine     if [ -z $WINEDEBUG ]; then
-#\\wine       export WINEDEBUG=fixme-all
-#\\wine     fi
-#\\wine     if [  -n "$WINE_DESKTOP" ] ; then
-#\\wine       test "$WINE_DESKTOP" = 1 && WINE_DESKTOP='800x600'
-#\\wine       wine_args="explorer /desktop=Wow$$,$WINE_DESKTOP"
-#\\wine     fi
+#\\ifdef WINE
+    export WINEPREFIX=${PREFIX:-$HOME/.wine}
+
+     if [ -z $BIN ] ; then
+       BIN=wine
+     fi
+     if [ ! -z "$WINEPATH" ] ; then
+		check_wineserver || return 1
+		set_wine_ver "$WINEPATH"
+      fi
+      if [ -z $WINEDEBUG ]; then
+	export WINEDEBUG=fixme-all
+      fi
+      if [  -n "$WINE_DESKTOP" ] ; then
+        test "$WINE_DESKTOP" = 1 && WINE_DESKTOP='800x600'
+	wine_args="explorer /desktop=Wow$$,$WINE_DESKTOP"
+    fi
+#\\endif
     clear_cache
     case $CACHE_ACCOUNT_NAME in
       1|true)
@@ -409,21 +414,21 @@ execute_app () {
 # started app info :  
 # name : `basename "$exe"`
 # ver : $wowver
-#\\wine# wine bin : `basename $BIN`
-#\\wine# wine ver : `$BIN --version`
+#\\!wine# wine bin : `basename $BIN`
+#\\!wine# wine ver : `$BIN --version`
 END
   cd "$GAMEDIR"
 
-#\\lin_wow_client sh -c "$exe >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 ""   & # hope they'll release the linux client some day :D
-#\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1" & 
-#\\mac_os_xsh -c "open $exe  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
-#\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
-#\\mingw exec "$exe  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
-# #\\lin_wow_client sh -c ""$exe" | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "   & # hope they'll release the linux client some day :D
-# #\\wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" | tee $CONFDIR/logs/wow$serverver_$dt.log &
-# #\\mac_os_xsh -c "open $exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
-# #\\wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
-# #\\mingw exec ""$exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+#\\!lin_wow_client sh -c "$exe >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 ""   & # hope they'll release the linux client some day :D
+#\\!wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\" >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1" & 
+#\\!mac_os_xsh -c "open $exe  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+#\\!wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
+#\\!mingw exec "$exe  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+#\\!lin_wow_client sh -c ""$exe" | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 "   & # hope they'll release the linux client some day 
+#\\!wine  sh -c "env WINEPREFIX=$WINEPREFIX "$BINPATH"$BIN $wine_args \"$exe\"" | tee $CONFDIR/logs/wow$serverver_$dt.log &
+#\\!mac_os_xsh -c "open $exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
+#\\!wine  test `basename "$exe"` = WoWMe.exe && exe=WoW.exe
+#\\!mingw exec ""$exe"  | tee $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
 
 }
 del_var () { # del variable in file
@@ -441,10 +446,12 @@ end_app() {
 	echo "USER_ACCOUNT_NAME=$USER_ACCOUNT_NAME" > "$server_related_cache"/$selected_server
 	;;
   esac
-#\\#\\wine "$BINPATH"/wineboot -e 
-#\\wine  set_wine_ver
-#\\wine  unset BIN 
-#\\wine  unset WINEPATH
+#\\ifdef WINE
+  wine "$BINPATH"/wineboot -e 
+  set_wine_ver
+  unset BIN 
+  unset WINEPATH
+#\\endif
 
 }
 cfg_info () { # display info off cfg files
@@ -476,10 +483,10 @@ cfg_info () { # display info off cfg files
    cat <<END
 WoW Version = $wowver
 $GAMEDIRL   = $GAMEDIR
-#\\winePrefix	    = `echo ${PREFIX:="default : $HOME/.wine"}`
+#\\!winePrefix	    = `echo ${PREFIX:="default : $HOME/.wine"}`
 exe         = $exe
-#\\wineBIN         = `echo ${BIN:="default : wine"}`
-#\\wineBINVER      = `${BIN:=wine} --version`
+#\\!wineBIN         = `echo ${BIN:="default : wine"}`
+#\\!wineBINVER      = `${BIN:=wine} --version`
 END
   #;;
   #esac
@@ -498,7 +505,7 @@ appname=World\ of\ Warcraft\ $2
 GAMEDIR=$3
 exe=$4
 wowver=$2
-#\\winePREFIX=$5
+#\\!winePREFIX=$5
 cfg_ver=0.3
 END
     return $?
@@ -536,9 +543,9 @@ END
 	   $BACK) continue 3 || return $?  ;;
 	esac
       done
-#\\wine      exe='Wow.exe'
-#\\mac_os_x	exe="World of Warcraft.app"
-#\\wow_lin_client	exe=WowClient
+#\\!wine      exe='Wow.exe'
+#\\!mac_os_x	exe="World of Warcraft.app"
+#\\!wow_lin_client	exe=WowClient
 
       echo --------------------------------------------------------------------------------
       echo "$GAMEDIRLL"
@@ -553,7 +560,7 @@ appname=World\ of\ Warcraft\ $2
 GAMEDIR=$GAMEDIR
 exe=$exe
 wowver=$GAMEDIRVER
-#\\winePREFIX=$PREFIX
+#\\!winePREFIX=$PREFIX
 cfg_ver=0.3
 END
 
@@ -698,19 +705,17 @@ LIST
 	  echo --------------------------------------------------------------------------------
 	  cfg_info ${applist[$run]} # post wow version info
 	  echo --------------------------------------------------------------------------------
-#\\wine 	  case $wowver in #\\wine case wow version is greater than 3 add $(GAMEDIRL) to $r_input
-#\\wine 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng Prefix $BACK ) ;;
-#\\wine 	  *)  r_input=( Version $GAMEDIRL  Prefix $BACK ) ;;
-#\\mac_os_x 	  case $wowver in #\\mac_os_x case wow version is greater than 3 add $(GAMEDIRL) to $r_input
-#\\mac_os_x 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
-#\\mac_os_x 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
-#\\mingw 	  case $wowver in #\\mingw case wow version is greater than 3 add $(GAMEDIRL) to $r_input
-#\\mingw 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
-#\\mingw 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
-#\\wow_lin_client 	  case $wowver in #  case wow version is greater than 3 add $(GAMEDIRL) to $r_input
-#\\wow_lin_client 	  3.*|4.*)  r_input=( Version $GAMEDIRL $lng $BACK ) ;;
-#\\wow_lin_client 	  *)  r_input=( Version $GAMEDIRL  $BACK ) ;;
-#\\all	  esac
+	  # case wow version is greater than 3 add $(GAMEDIRL) to $r_input
+#\\ifdef WINE
+ 	  case $wowver in 
+	    3.*|4.*)  r_input=( Version $GAMEDIRL $lng Prefix $BACK ) ;;
+	    *)  r_input=( Version $GAMEDIRL  Prefix $BACK ) ;;
+#\\else 
+ 	  case $wowver in 
+	    3.*|4.*)  	r_input=( Version $GAMEDIRL $lng $BACK ) ;;
+	    *)  	r_input=( Version $GAMEDIRL  $BACK ) ;;
+#\\endif
+	  esac
 	  echo "$CFGEDITL"
 	  for ((i_no=0;  i_no <= $(( ${#r_input[*]} - 1 )); i_no++)); do  
 	    echo "$i_no ${r_input[$i_no]}" 
@@ -740,15 +745,17 @@ LIST
 		 echo "GAMEDIR=\"$GAMEDIR\"" >> $appdir/${commands_run[$run]}
 		 ;;
 	      $lng) echo placeholder ; break 2 ;;
-#\\wine 	      Prefix)
-#\\wine 		 echo "$PREFIXL"
-#\\wine 		 old_PREFIX="$PREFIX"
-#\\wine 		 read PREFIX
-#\\wine 		#\\wine PREFIX=`echo $PREFIX | sed 's/\\/\\//'`
-#\\wine 		 del_var $appdir/${commands_run[$run]} PREFIX
-#\\wine 		 echo "PREFIX=\"$PREFIX\"" >> $appdir/${commands_run[$run]}
-#\\wine 		 break 2
-#\\wine 		 ;;
+#\\ifdef WINE
+	      Prefix)
+		 echo "$PREFIXL"
+ 		 old_PREFIX="$PREFIX"
+ 		 read PREFIX
+		 PREFIX=`echo $PREFIX | sed 's/\\/\\//'`
+		 del_var $appdir/${commands_run[$run]} PREFIX
+		 echo "PREFIX=\"$PREFIX\"" >> $appdir/${commands_run[$run]}
+ 		 break 2
+ 		 ;;
+#\\endif
 	      $BACK) break 3 ;;
 	      #*) ;;
 	    esac
@@ -782,14 +789,14 @@ LIST
 	esac
       done
 }
-#\\allif [ $1 = -n  ]  > /dev/null 2>&1 ; then
-#\\all gen_conf 
-#\\allelif [ ! -e $CONFDIR/realm.conf ]; then
-#\\all  echo "realm.conf don't exist in $CONFIGDIR, please start realm with -n to setup a new one" >&2
-#\\all  exit 1
-#\\allelse
-#\\all . $CONFDIR/realm.conf
-#\\allfi
+if [ $1 = -n  ]  > /dev/null 2>&1 ; then
+  gen_conf 
+elif [ ! -e $CONFDIR/realm.conf ]; then
+    echo "realm.conf don't exist in $CONFIGDIR, please start realm with -n to setup a new one" >&2
+    exit 1
+else
+  . $CONFDIR/realm.conf
+fi
 
 
 case $1 in
@@ -842,9 +849,9 @@ case $1 in
       mkdir -p $appdir
       mkdir -p $APPLICATION_XDG_SHARE/lang
       ;;
-#\\mac_os_x-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && open "$GAMEDIR" ;;
-#\\mingw-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && explorer "$GAMEDIR" ;;
-#\\unix-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && xdg-open "$GAMEDIR" ;;
+#\\!mac_os_x-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && open "$GAMEDIR" ;;
+#\\!mingw-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && explorer "$GAMEDIR" ;;
+#\\!unix-G|--open-gamedir) setlang && cfg_info $2 > /dev/null && xdg-open "$GAMEDIR" ;;
  --xterm|--term|--window) declare -x realm_term=1 && exec xterm -fg white -bg black -title $APPNAME -e `which $0 || echo $0` ; exit 0 ;;
  -n) gen_conf ;;
  -S|--conf|--settings) setlang && settings ;;
