@@ -194,14 +194,15 @@ reset_run_vars() { # reset vars used vars (only where vars with wrong content gi
   IFS=$old_ifs
 }
 test_server_file () { # test if all needed server vars exist
-  if [ \( -z $serverver \) -o \( -z $realm \) -o \( -z $update \) -o \( -z "$servername" \) ]; then
+  if [  -z $serverver  -o  -z $realm  -o \( -z $update  -o -z "$servername"  ]; then
     return 1
   fi
 }
 
 test_server_status () { # test if server is offline
   ping -w 2 -c 1 $realm > /dev/null 2>&1
-  if [ $? -ge 2 ] ; then # if ping returns $(($? >= 2)) than server is offline , if it dosnt accepts our packets ping returns only 1
+  # if ping returns $(($? >= 2)) than server is offline , if it dosnt accepts our packets ping returns only 1
+  if [ $? -ge 2 ] ; then 
     return 1 # so return server is offline (false)
   else
     return 0 # return server is online (true)
@@ -210,95 +211,96 @@ test_server_status () { # test if server is offline
 }
 #\\ifdef cataclysm 
 sync_rcfg_content() { # sync_rcfg_content $sever_launcher (testserver_launcher.exe, testserver_Wow.exe) with realm content cache
-  for var in "$server_launcher" "$server_wowclient" ; do
-    if [ ! -z "$var" ] ; then
-      if [ "$var" -nt "$rcfg_cache"/"`basename $var`" ] ; then
-	mkdir -p $rcfg_cache/$selected_server
-	wget $wget_download_options $var --output-document=$rcfg_cache/$selected_server/"`basename $var`" || return 1
-      fi
-    fi
-  done
-  unset var
+    local var
+    for var in "$server_launcher" "$server_wowclient" ; do
+	if [ ! -z "$var" ] ; then
+	    if [ "$var" -nt "$rcfg_cache"/"`basename $var`" ] ; then
+		mkdir -p $rcfg_cache/$selected_server
+		wget $wget_download_options $var --output-document=$rcfg_cache/$selected_server/"`basename $var`" || return 1
+	    fi
+	fi
+    done
 }
 #\\endif
+
 get_wtf_var() { # get gamelang from Config.wtf in $GAMEDIR
- if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
-  return_var="`cat "$GAMEDIR"/WTF/[Cc]onfig.wtf | grep -i "[SsEeTt] $1" | sed "s/[Ss][Ee][Tt] $1//"`" && \
-  echo "$return_var"
- fi
-  
-  return $?
+    if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
+	return_var="`cat "$GAMEDIR"/WTF/[Cc]onfig.wtf | grep -i "[SsEeTt] $1" | sed "s/[Ss][Ee][Tt] $1//"`" && \
+	    echo "$return_var"
+    fi
+    
+    return $?
 }
+
 update_lang () { # update realms lang
-	cp $CONFDIR/realm.conf $CONFDIR/realm.old
-	rm $CONFDIR/realm.conf
-	cp  $CONFDIR/defaults/realm.conf $CONFDIR/realm.conf
-        cat >> $CONFDIR/realm.conf <<END
+    cp $CONFDIR/realm.conf $CONFDIR/realm.old
+    rm $CONFDIR/realm.conf
+    cp  $CONFDIR/defaults/realm.conf $CONFDIR/realm.conf
+    cat >> $CONFDIR/realm.conf <<END
 lang=$lang
 END
-  setlang
+    setlang
 }
 
 server_menu () { # display server selecter
-
-  if  [ -z $number ] ; then # if servers names are cached do nothing
-      number=${number:=0}
-      for cfg_file in $servercfgdir/*.rcfg ; do # cache server name
-	  unset servername realm update serverver owner ownermail cfg_ver server_launcher server_wowclient
-	  . $cfg_file 
-	  test_server_file && \
-	  	content[$number]="$servername" && \
-	  number=$(( $number + 1 ))
-      done
-      content_raw=( `ls $servercfgdir | grep -v \~ | grep rcfg`) 	# get all installed servers and prevent that servers  with servers.rcfg~ are inclued in $applist
-      local content_size=$(( ${#content[*]} - 1 )) # get how many servers where scanned
-      content[$content_size]="$conf"
-      content[$(( $content_size + 1 ))]="$exit"
-      content_raw[$(( ${#content_raw[*]} - 1 ))]=settings
-      content_raw[${#content_raw[*]}]=exit
-      unset cfg_file
-      readonly content content_raw
-  fi
-
+    local content_size content_raw cfg_file content
+    if  [ -z $number ] ; then # if servers names are cached do nothing
+	number=${number:=0}
+	for cfg_file in $servercfgdir/*.rcfg ; do # cache server name
+	    unset servername realm update serverver owner ownermail cfg_ver server_launcher server_wowclient
+	    . $cfg_file 
+	    test_server_file && \
+		content[$number]="$servername" && \
+		number=$(( $number + 1 ))
+	done
+	# get all installed servers and prevent that servers  with servers.rcfg~ are inclued in $applist
+	content_raw=( `ls $servercfgdir | grep -v \~ | grep rcfg`) 
+	local content_size=$(( ${#content[*]} - 1 )) # get how many servers where scanned
+	content[$content_size]="$conf"
+	content[$(( $content_size + 1 ))]="$exit"
+	content_raw[$(( ${#content_raw[*]} - 1 ))]=settings
+	content_raw[${#content_raw[*]}]=exit
+    fi
+    
 #\\!DEBUG echo ${content[*]}
-#\\!DEBUG echo ${#content[*]}
-  cat <<LIST
+    #\\!DEBUG echo ${#content[*]}
+    cat <<LIST
 $WELCOME
 --------------------------------------------------------------------------------
 $MSG_S
 --------------------------------------------------------------------------------
 
 LIST
-  for ((no=0; no <= $(( ${#content[*]} - 1 )); no++)) ; do
-    echo $no ${content[$no]} 
-  done
-  unset no
-  cat <<LIST
+    for ((no=0; no <= $(( ${#content[*]} - 1 )); no++)) ; do
+	echo $no ${content[$no]} 
+    done
+    unset no
+    cat <<LIST
 --------------------------------------------------------------------------------
 LIST
-# $exitn
-
-  read input  # 1. $conf
-#\\!DEBUG echo $input
-#\\!DEBUG echo ${content[$run]}
+    # $exitn
+    
+    read input  # 1. $conf
+    #\\!DEBUG echo $input
+    #\\!DEBUG echo ${content[$run]}
     for ((run=${#content[*]}; run >= 0;run--)) ; do
       if [ "$input" = "${content[$run]}" ] || [ "$input" = $run ]  > /dev/null 2>&1 ; then
-#       unset serverlist
+	  #       unset serverlist
 #       unset serverlist_cfg
-#       unset commands_l
+	  #       unset commands_l
       case ${content_raw[$run]} in 
       *.rcfg)
 	 return_stat=0
 	 selected_server=$servercfgdir/${content_raw[$run]}
 	 . $selected_server
-#	 test_server_file
-# 	 if [ $filestat = 1 ] > /dev/null 2>&1 ; then
-# 	    print_err "$CFGER"
+	 #	 test_server_file
+	 # 	 if [ $filestat = 1 ] > /dev/null 2>&1 ; then
+	 # 	    print_err "$CFGER"
 # 	 fi
 	 
 	 break 2
 	 ;;
-      *) ${content_raw[$run]} ;;
+	  *) ${content_raw[$run]} ;;
       esac 
       fi
     done 
@@ -306,108 +308,109 @@ LIST
 }
 
 edit_realmlist () { # edit realm list of selected wow version
-      case $wowver in 
-	  3.*|4.*) local DESTINATION=$GAMEDIR/Data/$GAME_LANG ;;
-	  *) local DESTINATION=$GAMEDIR ;;
-      esac
-    echo "set realmlist $realm">"$DESTINATION/realmlist.wtf"
-    echo "set patchlist $update">>"$DESTINATION/realmlist.wtf"
+    local dest
+    case $wowver in 
+	  3.*|4.*) dest=$GAMEDIR/Data/$GAME_LANG ;;
+	*) dest=$GAMEDIR ;;
+    esac
+    echo "set realmlist $realm">"$dest/realmlist.wtf"
+    echo "set patchlist $update">>"$dest/realmlist.wtf"
 }
 
 print_log () {
-  echo --------------------------------------------------------------------------------
-  echo \# "$APPNAME : print_log"                                                     \#
-  echo --------------------------------------------------------------------------------
-  cat $CONFDIR/logs/wow$serverver_$dt.log
-  echo --------------------------------------------------------------------------------
-  echo "$TEMSG"                                                    
-  echo --------------------------------------------------------------------------------
-  read next
-  if [ $next = r ] > /dev/null 2>&1 ; then
-     reset_run_vars
-     clear
-     continue 2 # go back to servmenu
-  elif [ $next = q ]  > /dev/null 2>&1 ; then
+    echo --------------------------------------------------------------------------------
+    echo \# "$APPNAME : print_log"                                                     \#
+    echo --------------------------------------------------------------------------------
+    cat $CONFDIR/logs/wow$serverver_$dt.log
+    echo --------------------------------------------------------------------------------
+    echo "$TEMSG"                                                    
+    echo --------------------------------------------------------------------------------
+    read next
+    if [ $next = r ] > /dev/null 2>&1 ; then
+	reset_run_vars
+	clear
+	continue 2 # go back to servmenu
+    elif [ $next = q ]  > /dev/null 2>&1 ; then
     exit $? #return $?
-  fi  
+    fi  
 }
 init_app () { # test something and load variables of WoW version
-  if [ -e $appdir/wow$serverver.rcfg ]; then
-    . $appdir/wow$serverver.rcfg
+    if [ -e $appdir/wow$serverver.rcfg ]; then
+	. $appdir/wow$serverver.rcfg
 #\\ifdef cataclysm 
-    case $wowver in 
-      4.*)
-	sync_rcfg_content || tmp_msg=stub; return 1
-	if [ -z "$server_wowclient"  ] ; then 
-	  ln -s $rcfg_cache/"`basename $server_wowclient $GAMEDIR/$server_wowclient`"
-	  exe="$server_wowclient"
-	fi
-	;;
-      *)
-#\\endif
-      if ! test_server_status ; then
-	setlang
-	tmp_msg="$SERVEROFMSG"
-	return 1
-      fi
-#\\ifdef cataclysm 
-      ;;
-    esac
-#\\endif
-    if [ $options = -v ] > /dev/null 2>&1 ; then
-      echo "gamedir=$GAMEDIR"
-      echo "exe=$exe"
-      echo "wowver=$wowver"
-#\\ifdef WINE
-      echo "WINEVER=${WINEPATH:=default: system installed}"
-#\\endif
-    fi
-#\\ifdef WINE
-    export WINEPREFIX=${PREFIX:-$HOME/.wine}
-
-     if [ -z $BIN ] ; then
-       BIN=wine
-     fi
-     if [ ! -z "$WINEPATH" ] ; then
-		check_wineserver || return 1
-		set_wine_ver "$WINEPATH"
-      fi
-      if [ -z $WINEDEBUG ]; then
-	export WINEDEBUG=fixme-all
-      fi
-      if [  -n "$WINE_DESKTOP" ] ; then
-        test "$WINE_DESKTOP" = 1 && WINE_DESKTOP='800x600'
-	wine_args="explorer /desktop=Wow$$,$WINE_DESKTOP"
-    fi
-#\\endif
-    clear_cache
-    case $CACHE_ACCOUNT_NAME in
-      1|true)
-	  if [ -e "$server_related_cache/$selected_server" ] ; then
-	      . "$server_related_cache/$selected_server"  
-	      if [ -n "$USER_ACCOUNT_NAME" ] ; then
-		if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
-		  del_var accountName "$GAMEDIR"/WTF/[Cc]onfig.wtf
-		  echo "set accountName $USER_ACCOUNT_NAME" >> "$GAMEDIR"/WTF/[Cc]onfig.wtf
+	case $wowver in 
+	    4.*)
+		sync_rcfg_content || tmp_msg=stub; return 1
+		if [ -z "$server_wowclient"  ] ; then 
+		    ln -s $rcfg_cache/"`basename $server_wowclient $GAMEDIR/$server_wowclient`"
+		    exe="$server_wowclient"
 		fi
-	      fi
-	  fi
-    esac
-  else
-    tmp_msg="no WoW version for the $serverver found"
-    return 1
-  fi
+		;;
+	    *)
+#\\endif
+		if ! test_server_status ; then
+		    setlang
+		    tmp_msg="$SERVEROFMSG"
+		    return 1
+		fi
+#\\ifdef cataclysm 
+		;;
+	esac
+#\\endif
+	if [ $options = -v ] > /dev/null 2>&1 ; then
+	    echo "gamedir=$GAMEDIR"
+	    echo "exe=$exe"
+	    echo "wowver=$wowver"
+#\\ifdef WINE
+	    echo "WINEVER=${WINEPATH:=default: system installed}"
+#\\endif
+	fi
+#\\ifdef WINE
+	export WINEPREFIX=${PREFIX:-$HOME/.wine}
+	
+	if [ -z $BIN ] ; then
+	    BIN=wine
+	fi
+	if [ ! -z "$WINEPATH" ] ; then
+	    check_wineserver || return 1
+	    set_wine_ver "$WINEPATH"
+      fi
+	if [ -z $WINEDEBUG ]; then
+	export WINEDEBUG=fixme-all
+	fi
+	if [  -n "$WINE_DESKTOP" ] ; then
+            test "$WINE_DESKTOP" = 1 && WINE_DESKTOP='800x600'
+	    wine_args="explorer /desktop=Wow$$,$WINE_DESKTOP"
+	fi
+#\\endif
+	clear_cache
+	case $CACHE_ACCOUNT_NAME in
+	    1|true)
+		if [ -e "$server_related_cache/$selected_server" ] ; then
+		    . "$server_related_cache/$selected_server"  
+		    if [ -n "$USER_ACCOUNT_NAME" ] ; then
+			if [ -e "$GAMEDIR"/WTF/[Cc]onfig.wtf ] ; then
+			    del_var accountName "$GAMEDIR"/WTF/[Cc]onfig.wtf
+			    echo "set accountName $USER_ACCOUNT_NAME" >> "$GAMEDIR"/WTF/[Cc]onfig.wtf
+			fi
+		    fi
+		fi
+	esac
+    else
+	tmp_msg="no WoW version for the $serverver found"
+	return 1
+    fi
 }
 
 clear_cache () { # clears cache/WDB directory of WoW Version
-  case $wowver in 
-    0.*|1.*) local game_cache=""$GAMEDIR"/WDB" ;;
-    2.*|3.*|4.*) local game_cache=""$GAMEDIR"/Cache" ;;
-  esac
-  rm -r "$game_cache" > /dev/null 2>&1
+    case $wowver in 
+	0.*|1.*) local game_cache=""$GAMEDIR"/WDB" ;;
+	2.*|3.*|4.*) local game_cache=""$GAMEDIR"/Cache" ;;
+    esac
+    rm -r "$game_cache" > /dev/null 2>&1
 }
 execute_app () {
-  dt=`date +%d_%m_%Y_%H_%M`
+    dt=`date +%d_%m_%Y_%H_%M`
   cat > $CONFDIR/logs/wow$serverver_$dt.log <<END
 # started app info :  
 # name : `basename "$exe"`
@@ -426,55 +429,55 @@ END
 #\\!mingw exec "$exe  >> $CONFDIR/logs/wow$serverver_$dt.log 2>&1 " &
 }
 del_var () { # del variable in file
-  file="$1"
-  sed -i "/$2/d" $file
+    file="$1"
+    sed -i "/$2/d" $file
 }
 
 end_app() {
-  if [ ! -z "$server_wowclient" ] ; then
-    rm "$GAMEDIR/$server_wowclient" 
+    if [ ! -z "$server_wowclient" ] ; then
+	rm "$GAMEDIR/$server_wowclient" 
   fi
-  case $CACHE_ACCOUNT_NAME in
+    case $CACHE_ACCOUNT_NAME in
     1|true)
-	USER_ACCOUNT_NAME="`get_wtf_var accountName`"  && \
-	echo "USER_ACCOUNT_NAME=$USER_ACCOUNT_NAME" > "$server_related_cache"/$selected_server
-	;;
-  esac
+	    USER_ACCOUNT_NAME="`get_wtf_var accountName`"  && \
+		echo "USER_ACCOUNT_NAME=$USER_ACCOUNT_NAME" > "$server_related_cache"/$selected_server
+	    ;;
+    esac
 #\\ifdef WINE
-  wine "$BINPATH"wineboot -e 
-  set_wine_ver
-  unset BIN 
-  unset WINEPATH
+    "$BINPATH"wineboot -e 
+    set_wine_ver
+    unset BIN 
+    unset WINEPATH
 #\\endif
 
 }
 cfg_info () { # display info off cfg files
-  if [ $# -lt 1 ]; then
-    echo "$CFGIER (no server or app)" >&2
-    return 1
-  
-
-  #case $1 in
-   # s)
+    if [ $# -lt 1 ]; then
+      echo "$CFGIER (no server or app)" >&2
+      return 1
+      
+      
+      #case $1 in
+      # s)
     elif [  -e $servercfgdir/$1.rcfg ]; then
-      #echo "$CFGIERF"
-      #exit 1
-    
-     . $servercfgdir/$1.rcfg
-    echo "$CFGIS : $servername"
-    echo "realmlist: $realm"
-    echo "Update$CFGIS: $update"
-    echo "Serverversion: $serverver"
+	#echo "$CFGIERF"
+	#exit 1
+	
+	. $servercfgdir/$1.rcfg
+	echo "$CFGIS : $servername"
+	echo "realmlist: $realm"
+	echo "Update$CFGIS: $update"
+	echo "Serverversion: $serverver"
     echo "$CFGIO : $owner"
     echo "$CFGIOM : $ownermail"
     #;;
     #a)
     elif [ -e $appdir/$1.rcfg ]; then
-      #echo "$CFGIERF"
-      #return 1
-    #fi
-     . $appdir/$1.rcfg
-   cat <<END
+	#echo "$CFGIERF"
+	#return 1
+	#fi
+	. $appdir/$1.rcfg
+	cat <<END
 WoW Version = $wowver
 $GAMEDIRL   = $GAMEDIR
 #\\ifdef WINE
@@ -484,12 +487,12 @@ BIN         = `echo ${BIN:="default : wine"}`
 BINVER      = `${BIN:=wine} --version`
 #\\endif
 END
-  #;;
-  #esac
-  else
-    echo "$CFGIERF" >&2
-    return 1
-  fi
+	#;;
+	#esac
+    else
+	echo "$CFGIERF" >&2
+	return 1
+    fi
 
 }
 
@@ -626,7 +629,8 @@ settings () { # settings dialog
 	      echo --------------------------------------------------------------------------------
 	      echo "$LNOTE"
    # oldlang=$lang;
-     select t_lang in en de `ls $APPLICATION_XDG_SHARE/lang | grep -v \~ | grep rmo |  sed 's/.rmo/ /g' ` $exit ; do
+     select t_lang in English Deutsch `ls $APPLICATION_XDG_SHARE/lang | grep -v \~ | grep rmo |  sed 's/.rmo/ /g' ` $exit ; do
+#\\!DEBUG echo $t_lang
 	case t_lang in
 	   English)
 	   lang=en
