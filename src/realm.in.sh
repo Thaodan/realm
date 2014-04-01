@@ -20,7 +20,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 REALM_VERSION=@VER@
-REALM_REVISION=2710  # + 30 per change
+REALM_REVISION=@git_rev@
 APPNAME=$(basename $0999) # get plain name of $0
 CONFDIR=${XDG_CONFIG_HOME:=$HOME/.config}/realm # set confdir ( only prevent some errors on systems where $XDG_DATA_HOME is not set)
 APPLICATION_XDG_SHARE=${XDG_DATA_HOME:=$HOME/.local/share}/realm # set dir for application dara

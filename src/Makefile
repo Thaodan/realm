@@ -5,7 +5,7 @@ REALM_VER     	 	= 1.24
 WSYSTEMRC		= 0
 SYSTEMRC		= /etc/$(APPNAME)rc
 WUSERRC			= 0
-#GIT_REV    		= $(shell ./../tools/git_revgen)
+GIT_REV    		= $(shell ./../tools/git_revgen)
 USERRC			= "$\{XDG_CONFIG_HOME\:-$HOME/.config}"
 SCRIPTS			= realm
 HOST			= $(shell uname --kernel-name )
@@ -32,7 +32,7 @@ config.shh:
 	@echo $@: generating 
 	@echo '#\\define VER=$(REALM_VER)' > $@
 #	@echo '#\\define prefix=$(PREFIX)' >> $@
-#@echo '#\\define git_rev=$(GIT_REV)' >> $@
+	@echo '#\\define git_rev=$(GIT_REV)' >> $@
 
 
 
